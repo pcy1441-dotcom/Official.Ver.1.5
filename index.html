@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PINEAPPLE MYSTERY</title>
+
+<style>
+:root{
+  --bg:#050505; --accent:#f4d03f;
+  --red:#FF1801; --blue:#3712FF; --green:#18FF39;
+  --kiwi:#00ff00; --bberry:#4facfe;
+}
+body{
+  margin:0; font-family:'Courier New',monospace;
+  background:var(--bg); color:#e0e0e0;
+  height:100vh; overflow:hidden; text-align:center;
+  transition:0.6s;
+}
+body.kiwi-mode{ --accent:var(--kiwi); color:var(--kiwi); }
+body.blueberry-mode{ --accent:var(--bberry); color:#fff; }
+body.equinox-mode{ background:#111; color:#fff; }
+
+.ticker-wrap{
+  position:fixed; width:100%; z-index:100;
+  background:var(--accent); color:#000;
+  font-weight:900; padding:5px 0;
+}
+.t-bottom{ bottom:0 } .t-top{ top:0 }
+.ticker{ white-space:nowrap; animation:ticker 30s linear infinite; }
+@keyframes ticker{ from{transform:translateX(0)} to{transform:translateX(-50%)} }
+
+.wrapper{
+  height:100vh; display:flex;
+  align-items:center; justify-content:center;
+}
+.card{
+  display:none;
+  background:rgba(15,15,15,.95);
+  padding:30px; border-radius:20px;
+  border:1px solid #333;
+  max-width:380px; width:100%;
+}
+.btn{
+  width:100%; padding:15px; margin-top:10px;
+  background:#111; color:#fff;
+  border:1px solid #333; border-radius:8px;
+  cursor:pointer; font-weight:bold;
+}
+#role{ font-size:45px; font-weight:900 }
+#skill{ font-size:26px; margin-top:10px }
+</style>
+</head>
+
+<body>
+
+<div class="ticker-wrap t-top">
+  <div class="ticker">PINEAPPLE SYSTEM ONLINE 🍍 0217 🍍</div>
+</div>
+
+<div class="wrapper">
+
+<div id="menu" class="card" style="display:block">
+  <h1 style="color:var(--accent)">PINEAPPLE</h1>
+  <div>PLAYER:
+    <input id="pCount" type="number" min="4" max="20" value="6"
+      style="width:50px;background:none;color:#fff;border:none;border-bottom:1px solid #444">
+  </div>
+  <button class="btn" onclick="boot()">START</button>
+  <span onclick="admin()" style="font-size:10px;opacity:.3;cursor:pointer">[ADMIN]</span>
+</div>
+
+<div id="draw" class="card">
+  <div id="pNum" style="font-size:22px;margin-bottom:30px"></div>
+  <button class="btn" style="background:var(--red)" onclick="reveal()">ACCESS ROLE</button>
+</div>
+
+<div id="result" class="card" style="background:#fff;color:#000">
+  <div id="role"></div>
+  <div id="skill"></div>
+  <button class="btn" style="background:#000" onclick="next()">CONFIRM</button>
+</div>
+
+<div id="final" class="card">
+  <div id="fType" style="font-size:40px;font-weight:900"></div>
+  <button class="btn" onclick="location.reload()">REBOOT</button>
+</div>
+
+</div>
+
+<div class="ticker-wrap t-bottom">
+  <div class="ticker">PINEAPPLE CORP / EQUINOX 619</div>
+</div>
+
+<script>
+const murderTypes=[
+ {n:"Standard",w:59},
+ {n:"Chillsear",w:30},
+ {n:"Zombie",w:10},
+ {n:"Eden",w:1}
+];
+
+const murderSkills=["총잡이","가방","방탄"];
+
+let players,idx=0,roles=[],skills=[],type;
+
+function weightedPick(){
+ let r=Math.random()*100,sum=0;
+ for(const t of murderTypes){
+  sum+=t.w; if(r<sum) return t;
+ }
+}
+
+function boot(){
+ players=parseInt(pCount.value);
+ type=weightedPick();
+ roles=new Array(players).fill("시민");
+ roles[Math.floor(Math.random()*players)]="머더";
+ if(type.n==="Crying Devil"){
+  roles=roles.map(r=>r==="머더"?"머더":"보안관");
+ }
+ if(type.n==="Standard"){
+  let pool=[...murderSkills];
+  skills=roles.map(r=>{
+    if(r==="머더") return pool.splice(Math.random()*pool.length|0,1)[0];
+    return "무능력";
+  });
+ }else{
+  skills=roles.map(()=> "무능력");
+ }
+ menu.style.display="none";
+ draw.style.display="block";
+ pNum.innerText="PLAYER 1";
+}
+
+function reveal(){
+ role.innerText=roles[idx];
+ skill.innerText=skills[idx];
+ draw.style.display="none";
+ result.style.display="block";
+}
+
+function next(){
+ idx++;
+ result.style.display="none";
+ if(idx>=players){
+  final.style.display="block";
+  fType.innerText=type.n;
+ }else{
+  draw.style.display="block";
+  pNum.innerText="PLAYER "+(idx+1);
+ }
+}
+
+function admin(){
+ const pw=prompt("CODE");
+ if(pw==="9245") document.body.className="kiwi-mode";
+ if(pw==="1441") document.body.className="blueberry-mode";
+ if(pw==="619") document.body.className="equinox-mode";
+}
+</script>
+
+</body>
+</html>
